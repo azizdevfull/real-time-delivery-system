@@ -252,3 +252,191 @@ Order → Dispatch → Driver → Tracking
          ↓          ↓
       RabbitMQ (event bus)
 ```
+
+---
+To‘g‘ri qaror Azizbek aka 💯🔥
+Minimal model — tezlik, fokus, natija. Ortiqcha columnlar → keraksiz complexity.
+
+Quyida sizga **MVP uchun minimal schema** beraman. Bu bilan system ishlaydi, keyin kengaytirasiz.
+
+---
+
+# 🧱 1. ORDER SERVICE
+
+## 📦 Model: `Order`
+
+### 🎯 Maqsad:
+
+Faqat lifecycle boshqarish
+
+---
+
+## 🗄 Migration:
+
+```php
+Schema::create('orders', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('user_id');
+    $table->unsignedBigInteger('driver_id')->nullable();
+    $table->string('status'); // pending | assigned | delivering | done
+    $table->timestamps();
+});
+```
+
+---
+
+## 💡 Nima uchun yetarli?
+
+* `user_id` → kim buyurtma berdi
+* `driver_id` → kimga berildi
+* `status` → flow control
+
+👉 boshqa hamma narsa event’da
+
+---
+
+# 🚗 2. DRIVER SERVICE
+
+## 📦 Model: `Driver`
+
+---
+
+## 🗄 Migration:
+
+```php
+Schema::create('drivers', function (Blueprint $table) {
+    $table->id();
+    $table->string('status'); // available | busy
+    $table->timestamps();
+});
+```
+
+---
+
+## 💡 Nima uchun minimal?
+
+* `status` yetarli:
+
+  * available → dispatch oladi
+  * busy → ignore
+
+👉 location DB’da yo‘q ❗
+
+---
+
+# 📍 3. TRACKING SERVICE
+
+## ❗ DB shart emas (MVP)
+
+---
+
+## 🔥 Real-time:
+
+👉 Redis:
+
+```
+driver:{id}:location
+```
+
+---
+
+## Agar history xohlasangiz (optional):
+
+```php
+Schema::create('driver_locations', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('driver_id');
+    $table->float('lat');
+    $table->float('lng');
+    $table->timestamps();
+});
+```
+
+👉 lekin MVP’da SKIP qilsangiz ham bo‘ladi
+
+---
+
+# 🚦 4. DISPATCH SERVICE
+
+## ❗ DB kerak emas
+
+---
+
+## 🎯 Nima qiladi?
+
+* `order.created` keladi
+* `drivers` service’dan (event yoki cache orqali) tanlaydi
+* `order.assigned` yuboradi
+
+---
+
+👉 state saqlamaydi → stateless service
+
+---
+
+# 🧠 5. STATUS FLOW (IMPORTANT)
+
+---
+
+## Order status:
+
+```text
+pending → assigned → delivering → done
+```
+
+---
+
+## Driver status:
+
+```text
+available → busy → available
+```
+
+---
+
+# ⚡ 6. MINIMAL EVENT DATA (model bilan sync)
+
+---
+
+## order.created
+
+```json
+{
+  "order_id": 1,
+  "user_id": 10
+}
+```
+
+---
+
+## order.assigned
+
+```json
+{
+  "order_id": 1,
+  "driver_id": 5
+}
+```
+
+---
+
+## driver.accepted
+
+```json
+{
+  "order_id": 1,
+  "driver_id": 5
+}
+```
+
+---
+
+## driver.location.updated
+
+```json
+{
+  "driver_id": 5,
+  "lat": 41.31,
+  "lng": 69.27
+}
+```

@@ -24,7 +24,6 @@ return [
         'publish_confirm_batch_size' => env('MICRO_RABBITMQ_PUBLISH_CONFIRM_BATCH', 1),
         'publish_confirm_max_wait_ms' => env('MICRO_RABBITMQ_PUBLISH_CONFIRM_MAX_WAIT_MS', 10),
         'tracing' => env('MICRO_RABBITMQ_TRACING', true),     // Trace ID zanjiri
-        // 'outbox' => env('MICRO_RABBITMQ_OUTBOX', false),     // Xatni otib unutish
         'outbox' => [
             'enabled' => env('MICRO_RABBITMQ_OUTBOX', false),
             'max_attempts' => env('MICRO_RABBITMQ_OUTBOX_ATTEMPTS', 3), // <-- DINAMIK LIMIT
