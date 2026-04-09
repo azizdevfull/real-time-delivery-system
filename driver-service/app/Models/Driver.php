@@ -9,4 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 class Driver extends Model
 {
     use HasFactory;
+    const STATUS_AVAILABLE = 'available';
+    const STATUS_BUSY = 'busy';
 }

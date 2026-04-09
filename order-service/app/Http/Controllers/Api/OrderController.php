@@ -9,6 +9,14 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    public function index()
+    {
+        return response()->json(Order::paginate());
+    }
+    public function show($id)
+    {
+        return response()->json(Order::findOrFail($id));
+    }
     public function store(Request $request)
     {
         $data = $request->validate([
