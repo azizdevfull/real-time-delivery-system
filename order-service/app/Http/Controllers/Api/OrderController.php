@@ -13,13 +13,15 @@ class OrderController extends Controller
     {
         $data = $request->validate([
             'user_id' => 'required',
-            'driver_id' => 'required',
         ]);
         $data['status'] = 'pending';
         $order = Order::create($data);
         MicroRabbit::publish(
             'order.created',
-            $order->toArray()
+            [
+                'order_id' => $order->id,
+                'user_id' => $order->user_id
+            ]
         );
 
         return response()->json($order);

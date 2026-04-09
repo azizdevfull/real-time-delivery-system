@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use Azizdev\MicroRabbit\Attributes\ConsumeEvent;
+use Azizdev\MicroRabbit\Facades\MicroRabbit;
 use Illuminate\Support\Facades\Log;
 
 #[ConsumeEvent('order.created', 'delivery_events', 'dispatch_queue')]
@@ -12,15 +13,25 @@ class OrderCreatedAction
     {
         return [
             'user_id' => 'required',
-            'driver_id' => 'required',
-            'status' => 'required',
+            'order_id' => 'required',
         ];
     }
     public function handle(array $payload)
     {
-        Log::info('Order created', [
-            'payload' => $payload
+        Log::info('Order received in Dispatch', $payload);
+
+        // 1. Driver tanlash (temporary)
+        $driverId = rand(1, 10);
+
+        // 2. Event chiqarish
+        MicroRabbit::publish('order.assigned', [
+            'order_id' => $payload['order_id'],
+            'driver_id' => $driverId,
         ]);
-        // throw new \Exception('Order created error');
+
+        Log::info('Order assigned', [
+            'order_id' => $payload['order_id'],
+            'driver_id' => $driverId,
+        ]);
     }
 }
