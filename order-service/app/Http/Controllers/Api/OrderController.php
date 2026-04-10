@@ -13,10 +13,12 @@ class OrderController extends Controller
     {
         return response()->json(Order::paginate());
     }
+
     public function show($id)
     {
         return response()->json(Order::findOrFail($id));
     }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -28,7 +30,7 @@ class OrderController extends Controller
             'order.created',
             [
                 'order_id' => $order->id,
-                'user_id' => $order->user_id
+                'user_id' => $order->user_id,
             ]
         );
 
