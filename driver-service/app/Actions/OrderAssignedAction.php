@@ -6,9 +6,7 @@ use App\Models\Driver;
 use Azizdev\MicroRabbit\Attributes\ConsumeEvent;
 use Azizdev\MicroRabbit\Exceptions\DoNotRetryException;
 use Azizdev\MicroRabbit\Facades\MicroRabbit;
-use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 #[ConsumeEvent('order.assigned', 'delivery_events', 'driver_queue')]
 class OrderAssignedAction
@@ -20,10 +18,11 @@ class OrderAssignedAction
             'driver_id' => 'required',
         ];
     }
+
     public function handle(array $payload)
     {
         info('Order assigned', [
-            'payload' => $payload
+            'payload' => $payload,
         ]);
         DB::transaction(function () use ($payload) {
 
