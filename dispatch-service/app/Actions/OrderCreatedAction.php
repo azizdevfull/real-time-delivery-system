@@ -16,6 +16,7 @@ class OrderCreatedAction
             'order_id' => 'required',
         ];
     }
+
     public function handle(array $payload)
     {
         Log::info('Order received in Dispatch', $payload);
