@@ -13,11 +13,11 @@ return new class extends Migration
             $table->string('exchange');
             $table->string('routing_key');
             $table->json('payload');
-            
+
             // 🛡 YANGI QO'SHILGAN USTUNLAR:
             $table->unsignedInteger('attempts')->default(0); // Urinishlar soni
             $table->text('error_message')->nullable();       // Nega o'tmadi?
-            
+
             $table->timestamps();
 
             $table->index(['attempts', 'id']);
