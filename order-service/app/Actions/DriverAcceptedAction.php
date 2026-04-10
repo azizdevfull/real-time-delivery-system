@@ -16,6 +16,7 @@ class DriverAcceptedAction
             'driver_id' => 'required',
         ];
     }
+
     public function handle(array $payload)
     {
         DB::transaction(function () use ($payload) {
